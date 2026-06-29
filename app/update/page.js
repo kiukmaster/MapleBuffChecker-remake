@@ -38,15 +38,24 @@ export default function UpdatePage() {
       <style jsx>{`
         .update { max-width: 760px; }
         .u-head { margin-bottom: 28px; }
-        .u-head h1 { font-size: 26px; font-weight: 720; letter-spacing: -0.02em; }
+        .u-head h1 { font-size: 26px; font-weight: 790; letter-spacing: -0.025em; }
         .u-head p { font-size: 14px; margin-top: 6px; }
         .u-empty { color: var(--text-faint); font-size: 14px; padding: 20px; border: 1px dashed var(--border); border-radius: var(--radius-sm); }
-        .u-list { display: flex; flex-direction: column; gap: 14px; }
-        .u-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; }
+
+        /* 좌측 타임라인 라인 + 노드 */
+        .u-list { display: flex; flex-direction: column; gap: 14px; position: relative; padding-left: 22px; }
+        .u-list::before { content: ''; position: absolute; left: 5px; top: 8px; bottom: 8px; width: 2px; background: var(--border); }
+        .u-item { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; transition: border-color .15s; }
+        .u-item:hover { border-color: var(--border-strong); }
+        .u-item::before {
+          content: ''; position: absolute; left: -22px; top: 24px; width: 10px; height: 10px;
+          border-radius: 50%; background: var(--surface-3); border: 2px solid var(--bg);
+        }
+        .u-item:first-child::before { background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
         .u-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-        .u-meta time { font-size: 13px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
-        .u-new { font-size: 11px; font-weight: 700; color: #fff; background: #e5484d; padding: 1px 7px; border-radius: 999px; }
-        .u-item h2 { font-size: 17px; font-weight: 650; margin-bottom: 10px; }
+        .u-meta time { font-family: var(--mono); font-size: 13px; color: var(--text-muted); }
+        .u-new { font-size: 11px; font-weight: 800; color: #fff; background: #e5484d; padding: 1px 7px; border-radius: 999px; }
+        .u-item h2 { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
         .u-item ul { padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
         .u-item li { font-size: 14px; color: var(--text-muted); }
       `}</style>

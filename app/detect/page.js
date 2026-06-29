@@ -28,7 +28,7 @@ export default function DetectPage() {
           <p className="muted sub">감지할 스킬을 고르고 화면 공유를 시작하면, 해당 아이콘이 화면에 뜰 때 알려드립니다.</p>
         </div>
         <div className={'status' + (d.isDetecting ? ' on' : '')}>
-          <span className="dot" />
+          <span className="dot">{d.isDetecting && <span className="ring" />}</span>
           {d.isDetecting ? '감지 중' : d.phase === 'starting' ? '준비 중' : '대기'}
         </div>
       </header>
@@ -150,6 +150,7 @@ export default function DetectPage() {
         <section className="col">
           <h2>실시간 화면</h2>
           <div className="monitor">
+            {d.isDetecting && <div className="scan" />}
             <video ref={d.videoRef} muted playsInline style={{ display: d.isDetecting ? 'block' : 'none' }} />
             {!d.isDetecting && <span className="no-signal">화면 미연결</span>}
           </div>
@@ -179,21 +180,20 @@ export default function DetectPage() {
 
       <style jsx>{`
         .detect { display: flex; flex-direction: column; gap: 22px; }
-
         .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-        h1 { font-size: 26px; letter-spacing: -0.02em; font-weight: 720; }
+        h1 { font-size: 26px; letter-spacing: -0.025em; font-weight: 790; }
         .sub { font-size: 14px; margin-top: 6px; max-width: 560px; }
-        h2 { font-size: 15px; font-weight: 650; display: flex; align-items: center; gap: 8px; }
+        h2 { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 
         .status {
-          display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0;
-          padding: 8px 14px; border-radius: 999px; font-size: 13px; color: var(--text-muted);
-          background: var(--surface); border: 1px solid var(--border);
+          display: inline-flex; align-items: center; gap: 9px; flex-shrink: 0;
+          padding: 8px 15px; border-radius: 999px; font-size: 13px; font-weight: 600;
+          color: var(--text-muted); background: var(--surface); border: 1px solid var(--border);
         }
-        .status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-faint); }
-        .status.on { color: var(--good); }
-        .status.on .dot { background: var(--good); box-shadow: 0 0 0 4px var(--good-soft); animation: pulse 1.4s infinite; }
-        @keyframes pulse { 50% { opacity: 0.5; } }
+        .status .dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--text-faint); display: inline-flex; }
+        .status.on { color: var(--accent-hover); background: var(--accent-soft); border-color: var(--accent-line); }
+        .status.on .dot { background: var(--accent); }
+        .status.on .ring { position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid var(--accent); animation: mbcRing 1.8s ease-out infinite; }
 
         .toolbar {
           display: flex; align-items: flex-end; gap: 16px;
@@ -214,62 +214,64 @@ export default function DetectPage() {
         .tabs { display: flex; gap: 4px; background: var(--surface); padding: 4px; border-radius: 999px; border: 1px solid var(--border); }
         .tab { padding: 6px 16px; border: none; background: transparent; color: var(--text-muted); font-size: 13px; border-radius: 999px; transition: all 0.15s; }
         .tab:hover { color: var(--text); }
-        .tab.active { background: var(--surface-3); color: var(--text); }
+        .tab.active { background: var(--accent); color: var(--on-accent); font-weight: 650; }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 8px; }
         .chip {
-          display: flex; align-items: center; gap: 10px; padding: 0 12px; height: 48px;
-          background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+          display: flex; align-items: center; gap: 10px; padding: 0 12px; height: 46px;
+          background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
           color: var(--text-muted); transition: all 0.15s; text-align: left; overflow: hidden;
         }
-        .chip:hover:not(:disabled) { border-color: var(--border-strong); color: var(--text); }
+        .chip:hover:not(:disabled) { border-color: var(--accent-line); transform: translateY(-1px); color: var(--text); }
         .chip:disabled { cursor: not-allowed; opacity: 0.55; }
-        .chip .cat { width: 4px; height: 18px; border-radius: 2px; flex-shrink: 0; }
-        .chip img { width: 22px; height: 22px; object-fit: contain; filter: grayscale(1) opacity(0.6); flex-shrink: 0; }
+        .chip .cat { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .chip img { width: 24px; height: 24px; object-fit: contain; filter: grayscale(1) opacity(0.55); flex-shrink: 0; }
         .chip .name { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .chip.on { background: var(--accent-soft); border-color: var(--accent); color: var(--text); }
+        .chip.on { background: var(--accent-soft); border-color: var(--accent); color: var(--text); box-shadow: inset 0 0 0 1px rgba(124,196,102,.16); }
+        .chip.on .cat { box-shadow: 0 0 0 4px var(--accent-ring); }
         .chip.on img { filter: none; }
 
         .layout { display: grid; grid-template-columns: 360px 1fr; gap: 20px; align-items: start; }
         .col { display: flex; flex-direction: column; gap: 14px; }
-        .count { font-size: 12px; color: var(--text-faint); background: var(--surface-2); padding: 1px 8px; border-radius: 999px; }
+        .count { font-family: var(--mono); font-size: 12px; color: var(--accent-hover); background: var(--accent-soft); padding: 1px 8px; border-radius: 999px; }
         .empty { color: var(--text-faint); font-size: 14px; padding: 18px; border: 1px dashed var(--border); border-radius: var(--radius-sm); }
 
         .settings { display: flex; flex-direction: column; gap: 12px; max-height: 760px; overflow-y: auto; padding-right: 4px; }
         .setting { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
         .setting-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
         .setting-head img { width: 24px; height: 24px; object-fit: contain; }
-        .setting-head .title { font-weight: 650; font-size: 15px; }
+        .setting-head .title { font-weight: 700; font-size: 15px; }
         .sound { display: flex; gap: 6px; }
         .sound select { flex: 1; }
-        .play {
-          width: 40px; flex-shrink: 0; border: 1px solid var(--border); background: var(--surface-2);
-          color: var(--text); border-radius: var(--radius-sm); font-size: 11px;
-        }
+        .play { width: 40px; flex-shrink: 0; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); border-radius: var(--radius-sm); font-size: 11px; }
         .play.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 
         .monitor {
-          position: relative; aspect-ratio: 16/9; background: #161618;
+          position: relative; aspect-ratio: 16/9; background: #161719;
           border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
           display: flex; align-items: center; justify-content: center;
         }
         .monitor video { width: 100%; height: 100%; object-fit: contain; }
+        .monitor .scan {
+          position: absolute; left: 0; right: 0; top: 0; height: 2px; z-index: 2;
+          background: linear-gradient(90deg, transparent, rgba(124,196,102,.65), transparent);
+          box-shadow: 0 0 12px rgba(124,196,102,.45);
+          animation: mbcScan 2.8s linear infinite;
+        }
         .no-signal { color: var(--text-faint); font-size: 13px; }
         .log-title { margin-top: 6px; }
 
         .logs { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
-        .log { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--surface-3); border-radius: var(--radius-sm); padding: 10px 12px; transition: all 0.15s; }
-        .log.hit { border-left-color: var(--accent); background: var(--accent-soft); }
+        .log { background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 11px 13px; transition: all 0.15s; }
+        .log.hit { border-color: var(--accent-line); background: rgba(124,196,102,.12); animation: mbcGlow 1.8s ease-in-out infinite; }
         .log-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
         .log-name { font-size: 13px; font-weight: 600; }
-        .log-score { font-size: 12px; color: var(--text-faint); font-variant-numeric: tabular-nums; }
+        .log-score { font-family: var(--mono); font-size: 12px; color: var(--text-faint); }
+        .log.hit .log-score { color: var(--accent-hover); }
         .log-state { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
-        .log.hit .log-state { color: var(--accent); font-weight: 600; }
+        .log.hit .log-state { color: var(--accent-hover); font-weight: 600; }
 
-        @media (max-width: 880px) {
-          .layout { grid-template-columns: 1fr; }
-          .settings { max-height: none; }
-        }
+        @media (max-width: 880px) { .layout { grid-template-columns: 1fr; } .settings { max-height: none; } }
       `}</style>
 
       {/* shared control styling (selects / ranges) */}
@@ -281,10 +283,7 @@ export default function DetectPage() {
         }
         .detect select:disabled { opacity: 0.55; cursor: not-allowed; }
         .detect input[type='range'] { width: 100%; accent-color: var(--accent); cursor: pointer; }
-        .detect .btn {
-          padding: 11px 22px; border: 1px solid transparent; border-radius: 11px;
-          font-weight: 650; font-size: 14px; transition: all 0.15s;
-        }
+        .detect .btn { padding: 11px 22px; border: 1px solid transparent; border-radius: 11px; font-weight: 700; font-size: 14px; transition: all 0.15s; }
         .detect .btn.primary { background: var(--accent); color: var(--on-accent); }
         .detect .btn.primary:hover:not(:disabled) { background: var(--accent-hover); }
         .detect .btn.primary:disabled { background: var(--surface-3); color: var(--text-faint); cursor: not-allowed; }

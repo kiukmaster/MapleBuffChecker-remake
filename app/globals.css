@@ -1,51 +1,42 @@
-/* ───────────────────────────────────────────────────────────────────────
-   Design tokens — a quiet, Claude-inspired dark-grey theme.
-   Dark but soft (not pure black), a single warm clay accent, generous
-   rounding and hairline borders. Simple is the point.
-   ─────────────────────────────────────────────────────────────────────── */
-:root {
-  --bg: #1f1f22;
-  --bg-2: #25252a;
-  --surface: #2a2a2f;
-  --surface-2: #313137;
-  --surface-3: #3a3a41;
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
 
-  --border: rgba(255, 255, 255, 0.08);
+:root {
+  --bg: #1b1c1f;
+  --bg-2: #202126;
+  --surface: #232428;
+  --surface-2: #2b2c31;
+  --surface-3: #34353b;
+
+  --border: rgba(255, 255, 255, 0.07);
   --border-strong: rgba(255, 255, 255, 0.16);
 
-  --text: #ededee;
-  --text-muted: #a2a2a8;
-  --text-faint: #6f6f76;
+  --text: #eef0ee;
+  --text-muted: #9a9ba1;
+  --text-faint: #67686e;
 
-  --accent: #7cc466;        /* soft leaf green */
+  --accent: #7cc466;          /* 차분한 밝은 녹색 */
   --accent-hover: #8fd479;
-  --accent-soft: rgba(124, 196, 102, 0.16);
-  --on-accent: #11240d;     /* dark text for use on the bright-green accent */
+  --accent-soft: rgba(124, 196, 102, 0.10);
+  --accent-line: rgba(124, 196, 102, 0.35);
+  --accent-ring: rgba(124, 196, 102, 0.28);
+  --on-accent: #11240d;
 
   --good: #5bbf86;
   --good-soft: rgba(91, 191, 134, 0.14);
 
+  --mono: 'DM Mono', ui-monospace, SFMono-Regular, monospace;
   --radius: 14px;
   --radius-sm: 9px;
   --radius-pill: 999px;
-
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.22);
 
-  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+  --font: 'Pretendard', ui-sans-serif, system-ui, -apple-system,
     "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
 body {
   font-family: var(--font);
   background: var(--bg);
@@ -54,16 +45,8 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
 }
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button {
-  font-family: inherit;
-  cursor: pointer;
-}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -72,14 +55,15 @@ button {
   border-radius: var(--radius-pill);
   border: 2px solid var(--bg);
 }
-::-webkit-scrollbar-thumb:hover { background: #494952; }
+::-webkit-scrollbar-thumb:hover { background: #41424a; }
 
-/* shared layout helpers */
-.page {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 32px 24px 80px;
-}
-
+.page { max-width: 1180px; margin: 0 auto; padding: 32px 24px 80px; }
 .muted { color: var(--text-muted); }
 .faint { color: var(--text-faint); }
+.mono  { font-family: var(--mono); }
+
+/* ── Signal: 공용 키프레임 ── */
+@keyframes mbcPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+@keyframes mbcRing  { 0% { transform: scale(0.7); opacity: 0.5; } 100% { transform: scale(2.4); opacity: 0; } }
+@keyframes mbcScan  { 0% { transform: translateY(-12px); opacity: 0; } 12% { opacity: 0.65; } 88% { opacity: 0.65; } 100% { transform: translateY(100%); opacity: 0; } }
+@keyframes mbcGlow  { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.13); } }
