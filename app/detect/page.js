@@ -6,7 +6,7 @@ import { useDetector } from '@/lib/detection/useDetector';
 import { useCustomSounds } from '@/lib/sound/useCustomSounds';
 import { CUSTOM_PREFIX, ACCEPT_ATTR, formatBytes, customSounds } from '@/lib/sound/customSounds';
 
-const CAT_COLOR = { hunting: '#4aa8d8', boss: 'var(--accent)', job: '#bcff00' };
+const CAT_COLOR = { hunting: '#5aa9e0', boss: '#b07fd9', job: '#e0b15a' };
 
 export default function DetectPage() {
   const d = useDetector();
@@ -205,8 +205,8 @@ export default function DetectPage() {
         .field label { font-size: 12px; color: var(--text-faint); }
 
         .alert {
-          background: var(--accent-soft); border: 1px solid rgba(201,100,66,0.3);
-          color: #f0b9a6; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 14px;
+          background: rgba(229,72,77,0.12); border: 1px solid rgba(229,72,77,0.32);
+          color: #f1a6a6; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 14px;
         }
 
         .block { display: flex; flex-direction: column; gap: 14px; }
@@ -246,7 +246,7 @@ export default function DetectPage() {
           width: 40px; flex-shrink: 0; border: 1px solid var(--border); background: var(--surface-2);
           color: var(--text); border-radius: var(--radius-sm); font-size: 11px;
         }
-        .play.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .play.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 
         .monitor {
           position: relative; aspect-ratio: 16/9; background: #161618;
@@ -285,7 +285,7 @@ export default function DetectPage() {
           padding: 11px 22px; border: 1px solid transparent; border-radius: 11px;
           font-weight: 650; font-size: 14px; transition: all 0.15s;
         }
-        .detect .btn.primary { background: var(--accent); color: #fff; }
+        .detect .btn.primary { background: var(--accent); color: var(--on-accent); }
         .detect .btn.primary:hover:not(:disabled) { background: var(--accent-hover); }
         .detect .btn.primary:disabled { background: var(--surface-3); color: var(--text-faint); cursor: not-allowed; }
         .detect .btn.stop { background: var(--surface-2); color: var(--text); border-color: var(--border-strong); }
@@ -351,14 +351,14 @@ function SoundManager({ custom }) {
         .sm-head h3 { font-size: 15px; font-weight: 650; margin-bottom: 4px; }
         .sm-head p { font-size: 13px; }
         .sm-usage { font-size: 12px; color: var(--text-muted); }
-        .sm-error { background: var(--accent-soft); border: 1px solid rgba(201,100,66,0.3); color: #f0b9a6; padding: 9px 12px; border-radius: var(--radius-sm); font-size: 13px; }
+        .sm-error { background: rgba(229,72,77,0.12); border: 1px solid rgba(229,72,77,0.32); color: #f1a6a6; padding: 9px 12px; border-radius: var(--radius-sm); font-size: 13px; }
         .sm-empty { color: var(--text-faint); font-size: 13px; padding: 12px; border: 1px dashed var(--border); border-radius: var(--radius-sm); }
         .sm-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
         .sm-list li { display: flex; align-items: center; gap: 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; }
         .sm-name { flex: 1; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .sm-size { font-size: 12px; }
         .sm-mini { width: 30px; height: 28px; border: 1px solid var(--border); background: var(--surface-3); color: var(--text); border-radius: 7px; font-size: 11px; }
-        .sm-mini.del:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .sm-mini.del:hover { background: #e5484d; border-color: #e5484d; color: #fff; }
       `}</style>
     </div>
   );

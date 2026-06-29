@@ -51,7 +51,7 @@ export default function Home() {
           display: inline-flex; align-items: center; padding: 13px 24px;
           border-radius: 12px; font-weight: 650; font-size: 15px; transition: all 0.15s;
         }
-        .btn.primary { background: var(--accent); color: #fff; }
+        .btn.primary { background: var(--accent); color: var(--on-accent); }
         .btn.primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
 
         .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }

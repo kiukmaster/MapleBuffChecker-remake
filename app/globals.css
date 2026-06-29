@@ -17,12 +17,13 @@
   --text-muted: #a2a2a8;
   --text-faint: #6f6f76;
 
-  --accent: #c96442;        /* clay */
-  --accent-hover: #d6754f;
-  --accent-soft: rgba(201, 100, 66, 0.16);
+  --accent: #7cc466;        /* soft leaf green */
+  --accent-hover: #8fd479;
+  --accent-soft: rgba(124, 196, 102, 0.16);
+  --on-accent: #11240d;     /* dark text for use on the bright-green accent */
 
-  --good: #6cc08b;
-  --good-soft: rgba(108, 192, 139, 0.14);
+  --good: #5bbf86;
+  --good-soft: rgba(91, 191, 134, 0.14);
 
   --radius: 14px;
   --radius-sm: 9px;
