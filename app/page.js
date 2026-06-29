@@ -4,11 +4,10 @@ export default function Home() {
   return (
     <main className="page home">
       <section className="hero">
-        <span className="live"><span className="d" />실시간 감지 · GPU 경량 엔진</span>
-        <h1>버프 타이밍을,<br /><span className="accent">화면이 알아서</span> 알려줍니다.</h1>
+        <span className="live"><span className="d" />실시간 스킬 감지</span>
+        <h1>실시간으로,<br /><span className="accent">스킬을</span> 감지합니다</h1>
         <p className="lead">
-          미리 등록된 스킬 아이콘을 내 화면에서 실시간으로 찾아, 설치기·버프의 재사용 시점에
-          소리로 알려주는 메이플스토리 비공식 도우미입니다.
+          설치기·버프의 재사용 시점에 소리로 알려주는 메이플스토리 비공식 도우미입니다.
         </p>
         <div className="cta">
           <Link href="/detect" className="btn primary">스킬 감지 시작하기 →</Link>
@@ -18,9 +17,8 @@ export default function Home() {
 
       <section className="features">
         {[
-          { t: '가볍게', d: '11MB짜리 OpenCV 대신 GPU 셰이더로 매칭해 메모리 사용과 끊김을 줄였습니다.' },
-          { t: '내가 고른 스킬만', d: '사냥 · 보스 · 직업 카테고리에서 필요한 스킬만 선택해 감지합니다.' },
-          { t: '소리로 알림', d: '스킬별로 알림음과 음량, 감지 정확도를 따로 조절할 수 있습니다.' },
+          { t: '최적화', d: '기존 방식보다 더욱 가벼워 졌습니다.' },
+          { t: '사운드 커스텀', d: '원하는 음성을 추가할 수 있습니다.' }
         ].map((f) => (
           <div key={f.t} className="card">
             <h3>{f.t}</h3>

@@ -299,12 +299,22 @@ export default function DetectPage() {
 
 function SoundManager({ custom }) {
   const inputRef = useRef(null);
+  const [dragging, setDragging] = useState(false);
 
-  const onPick = async (e) => {
-    const files = Array.from(e.target.files || []);
+  const addFiles = async (files) => {
     for (const f of files) await custom.add(f);
+  };
+  const onPick = async (e) => {
+    await addFiles(Array.from(e.target.files || []));
     e.target.value = '';
   };
+  const onDrop = async (e) => {
+    e.preventDefault();
+    setDragging(false);
+    await addFiles(Array.from(e.dataTransfer?.files || []));
+  };
+  const onDragOver = (e) => { e.preventDefault(); if (!dragging) setDragging(true); };
+  const onDragLeave = (e) => { if (!e.currentTarget.contains(e.relatedTarget)) setDragging(false); };
 
   const preview = (id) => {
     const url = customSounds.urlFor(id);
@@ -312,11 +322,18 @@ function SoundManager({ custom }) {
   };
 
   return (
-    <div className="sm">
+    <div
+      className={'sm' + (dragging ? ' dragging' : '')}
+      onDragOver={onDragOver}
+      onDragEnter={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+    >
+      {dragging && <div className="sm-drop">여기에 놓으면 추가됩니다 (wav · mp3)</div>}
       <div className="sm-head">
         <div>
           <h3>내 알림음</h3>
-          <p className="muted">wav · mp3 파일을 추가하면 모든 스킬의 알림음 목록에서 선택할 수 있습니다. 이 브라우저에만 저장됩니다(서버 전송 없음).</p>
+          <p className="muted">wav · mp3 파일을 추가하거나 이 영역으로 끌어다 놓으세요. 추가하면 모든 스킬의 알림음 목록에서 선택할 수 있고, 이 브라우저에만 저장됩니다(서버 전송 없음).</p>
         </div>
         <button className="btn primary" onClick={() => inputRef.current?.click()}>파일 추가</button>
         <input ref={inputRef} type="file" accept={ACCEPT_ATTR} multiple hidden onChange={onPick} />
@@ -344,7 +361,14 @@ function SoundManager({ custom }) {
       )}
 
       <style jsx>{`
-        .sm { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+        .sm { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 12px; transition: border-color 0.15s, background 0.15s; }
+        .sm.dragging { border-color: var(--accent); background: var(--accent-soft); }
+        .sm-drop {
+          position: absolute; inset: 4px; z-index: 3; display: flex; align-items: center; justify-content: center;
+          border: 2px dashed var(--accent); border-radius: var(--radius-sm);
+          background: rgba(27,28,31,0.72); color: var(--accent-hover); font-size: 14px; font-weight: 600;
+          pointer-events: none;
+        }
         .sm-head { display: flex; align-items: center; gap: 16px; }
         .sm-head > div { flex: 1; }
         .sm-head h3 { font-size: 15px; font-weight: 650; margin-bottom: 4px; }
