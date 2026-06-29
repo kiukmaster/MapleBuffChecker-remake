@@ -64,32 +64,32 @@ export default function Navbar() {
         .brand-text { font-size: 17px; font-weight: 780; letter-spacing: -0.02em; color: var(--text); }
         .brand-text .hl { color: var(--accent); }
 
-        /* 탭 — 언더라인 인디케이터로 명확히 구분 */
-        .tabs { display: flex; gap: 2px; height: 58px; align-items: center; }
-        .tab {
-          position: relative; height: 58px; display: flex; align-items: center;
-          padding: 0 15px; font-size: 13.5px; font-weight: 600;
-          color: var(--text-muted); white-space: nowrap; transition: color 0.15s;
+        /* 탭 컨테이너 (탭 자체는 next/link라 아래 global 블록에서 처리) */
+        .tabs { display: flex; gap: 4px; align-items: center; }
+        @media (max-width: 560px) {
+          .nav-inner { padding: 0 14px; }
+          .brand-text { font-size: 15px; }
         }
-        .tab.has-new { padding-right: 18px; }
-        .tab:hover { color: var(--text); }
-        .tab.active { color: var(--text); }
-        .tab.active::after {
-          content: ''; position: absolute; left: 15px; right: 15px; bottom: 0;
-          height: 2px; background: var(--accent); border-radius: 2px 2px 0 0;
+      `}</style>
+
+      {/* 탭은 next/link(<a>)이고 className이 표현식이라 styled-jsx 스코프가 붙지
+          않는다. .nav 한정 global 로 적용한다(다른 페이지의 .tab 과 충돌 방지). */}
+      <style jsx global>{`
+        .nav .tab {
+          position: relative; padding: 7px 15px; border-radius: var(--radius-pill);
+          font-size: 13.5px; font-weight: 600; color: var(--text-muted);
+          border: 1px solid transparent; white-space: nowrap; transition: all 0.15s;
         }
-        .new {
-          position: absolute; top: 14px; right: 4px;
+        .nav .tab.has-new { padding-right: 17px; }
+        .nav .tab:hover { color: var(--text); background: var(--surface); }
+        .nav .tab.active { color: var(--text); background: var(--surface-2); border-color: var(--border-strong); }
+        .nav .new {
+          position: absolute; top: -6px; right: 1px;
           font-size: 9px; font-weight: 800; line-height: 1; color: #ff5b5b;
           letter-spacing: -0.02em; pointer-events: none;
           text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
         }
-        @media (max-width: 560px) {
-          .nav-inner { padding: 0 14px; }
-          .tab { padding: 0 10px; font-size: 13px; }
-          .tab.active::after { left: 10px; right: 10px; }
-          .brand-text { font-size: 15px; }
-        }
+        @media (max-width: 560px) { .nav .tab { padding: 7px 11px; font-size: 13px; } }
       `}</style>
     </nav>
   );
