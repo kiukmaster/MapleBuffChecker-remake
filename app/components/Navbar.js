@@ -2,14 +2,23 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { fetchPatchNotes, hasFreshNote } from '@/lib/patchnotes';
 
 const LINKS = [
   { href: '/', label: '홈' },
   { href: '/detect', label: '스킬 감지' },
+  { href: '/update', label: '패치노트' },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [fresh, setFresh] = useState(false);
+
+  useEffect(() => {
+    fetchPatchNotes().then((notes) => setFresh(hasFreshNote(notes)));
+  }, []);
+
   return (
     <nav className="nav">
       <div className="nav-inner">
@@ -21,6 +30,7 @@ export default function Navbar() {
           {LINKS.map((l) => (
             <Link key={l.href} href={l.href} className={'link' + (pathname === l.href ? ' active' : '')}>
               {l.label}
+              {l.href === '/update' && fresh && <span className="new">New!</span>}
             </Link>
           ))}
         </div>
@@ -64,11 +74,23 @@ export default function Navbar() {
           gap: 4px;
         }
         .link {
+          position: relative;
           padding: 7px 14px;
           border-radius: var(--radius-pill);
           font-size: 14px;
           color: var(--text-muted);
           transition: background 0.15s, color 0.15s;
+        }
+        .new {
+          position: absolute;
+          top: -3px;
+          right: -2px;
+          font-size: 9px;
+          font-weight: 700;
+          line-height: 1;
+          color: #ff5b5b;
+          letter-spacing: -0.02em;
+          pointer-events: none;
         }
         .link:hover {
           color: var(--text);

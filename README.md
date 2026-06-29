@@ -20,15 +20,21 @@ app/
   layout.js              레이아웃 · 내비게이션 · 푸터
   page.js                랜딩
   detect/page.js         감지 UI (상태만 렌더, 로직은 훅에 위임)
+  update/page.js         패치노트
   components/Navbar.js
 lib/detection/
   catalog.js             스킬 카탈로그(선언적 도메인 데이터)
   WebGLTemplateMatcher.js GPU 템플릿 매칭 엔진
   AlertController.js     instant / 쿨다운 / 지연 / 타이머 알림 상태머신
   useDetector.js         화면공유 + 감지 루프 + 알림을 묶는 React 훅
+lib/sound/
+  customSounds.js        사용자 알림음 저장소(IndexedDB, 서버 없음)
+  useCustomSounds.js     저장소용 React 훅
+lib/patchnotes.js        패치노트 로더 + New! 노출 판정
 public/
   detect/                스킬 템플릿 이미지(해상도·시간별)
   sound/                 알림음
+  patchnotes.json        패치노트(이 파일만 수정하면 게시)
 ```
 
 ## 감지 동작 (특수 케이스 포함)
@@ -38,8 +44,16 @@ public/
 - **지연(delayed)**: 마력[레테]는 최초 감지 후 5초 뒤 1회 알림. 대기 중 잠깐 끊겨도 타이머 유지.
 - **타이머**: 일격필살은 감지 시 30초 카운트다운을 시작하고 종료 N초 전(5/10초)에 알림,
   10초간 재감지 무시.
-- **남은 시간 선택**: 파운틴 · 야누스 · 골누스는 남은 시간별 템플릿으로 감지.
+- **남은 시간 선택**: 파운틴 · 야누스는 남은 시간별 템플릿으로 감지.
 - **동시 선택 금지**: 알레리아 ↔ 헤도.
+
+## 알림음 / 패치노트
+
+- **내 알림음**: 감지 페이지의 "내 알림음"에서 wav · mp3를 추가하면 모든 스킬의 알림음
+  목록에 나타납니다. 파일은 IndexedDB에 저장되어 이 브라우저에만 남고 서버로 전송되지
+  않습니다. 한도: 파일당 2 MB · 전체 20 MB · 최대 30개.
+- **패치노트**: `public/patchnotes.json`을 수정하면 패치노트 탭에 반영됩니다. 최신 글은
+  게시 후 7일 동안 내비게이션에 빨간 `New!` 배지로 표시되고, 7일이 지나면 자동으로 사라집니다.
 
 ## 개발
 

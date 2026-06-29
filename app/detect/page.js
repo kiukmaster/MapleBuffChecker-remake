@@ -1,14 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-import { SKILLS, CATEGORIES, RESOLUTIONS, DURATIONS, SKILL_BY_ID } from '@/lib/detection/catalog';
+import { useRef, useState } from 'react';
+import { SKILLS, CATEGORIES, RESOLUTIONS, DURATIONS } from '@/lib/detection/catalog';
 import { useDetector } from '@/lib/detection/useDetector';
+import { useCustomSounds } from '@/lib/sound/useCustomSounds';
+import { CUSTOM_PREFIX, ACCEPT_ATTR, formatBytes, customSounds } from '@/lib/sound/customSounds';
 
 const CAT_COLOR = { hunting: '#4aa8d8', boss: 'var(--accent)', job: '#bcff00' };
 
 export default function DetectPage() {
   const d = useDetector();
+  const custom = useCustomSounds();
   const [category, setCategory] = useState('all');
+  const [showSounds, setShowSounds] = useState(false);
 
   const locked = d.isActive; // selection / resolution locked while running
   const enabledSkills = SKILLS.filter((s) => d.enabled[s.id]);
@@ -38,6 +42,9 @@ export default function DetectPage() {
           </select>
         </div>
         <div className="spacer" />
+        <button className={'btn ghost' + (showSounds ? ' on' : '')} onClick={() => setShowSounds((v) => !v)}>
+          내 알림음{custom.items.length > 0 ? ` (${custom.items.length})` : ''}
+        </button>
         {!d.isActive ? (
           <button className="btn primary" disabled={!anyEnabled} onClick={d.actions.start}>
             감지 시작
@@ -46,6 +53,8 @@ export default function DetectPage() {
           <button className="btn stop" onClick={d.actions.stop}>중지</button>
         )}
       </div>
+
+      {showSounds && <SoundManager custom={custom} />}
 
       {d.error && <div className="alert">{d.error}</div>}
 
@@ -110,6 +119,13 @@ export default function DetectPage() {
                   <div className="sound">
                     <select value={d.sounds[s.id]} onChange={(e) => d.actions.setSound(s.id, e.target.value)}>
                       {Object.keys(s.sounds).map((k) => <option key={k} value={k}>{k}</option>)}
+                      {custom.items.length > 0 && (
+                        <optgroup label="내 알림음">
+                          {custom.items.map((c) => (
+                            <option key={c.id} value={CUSTOM_PREFIX + c.id}>{c.name}</option>
+                          ))}
+                        </optgroup>
+                      )}
                     </select>
                     <button className={'play' + (d.previewing === s.id ? ' on' : '')} onClick={() => d.actions.preview(s.id)}>
                       {d.previewing === s.id ? '■' : '▶'}
@@ -274,8 +290,77 @@ export default function DetectPage() {
         .detect .btn.primary:disabled { background: var(--surface-3); color: var(--text-faint); cursor: not-allowed; }
         .detect .btn.stop { background: var(--surface-2); color: var(--text); border-color: var(--border-strong); }
         .detect .btn.stop:hover { background: var(--surface-3); }
+        .detect .btn.ghost { background: transparent; color: var(--text-muted); border-color: var(--border-strong); }
+        .detect .btn.ghost:hover { color: var(--text); background: var(--surface-2); }
+        .detect .btn.ghost.on { color: var(--text); background: var(--surface-2); border-color: var(--accent); }
       `}</style>
     </main>
+  );
+}
+
+function SoundManager({ custom }) {
+  const inputRef = useRef(null);
+
+  const onPick = async (e) => {
+    const files = Array.from(e.target.files || []);
+    for (const f of files) await custom.add(f);
+    e.target.value = '';
+  };
+
+  const preview = (id) => {
+    const url = customSounds.urlFor(id);
+    if (url) new Audio(url).play().catch(() => {});
+  };
+
+  return (
+    <div className="sm">
+      <div className="sm-head">
+        <div>
+          <h3>내 알림음</h3>
+          <p className="muted">wav · mp3 파일을 추가하면 모든 스킬의 알림음 목록에서 선택할 수 있습니다. 이 브라우저에만 저장됩니다(서버 전송 없음).</p>
+        </div>
+        <button className="btn primary" onClick={() => inputRef.current?.click()}>파일 추가</button>
+        <input ref={inputRef} type="file" accept={ACCEPT_ATTR} multiple hidden onChange={onPick} />
+      </div>
+
+      <div className="sm-usage">
+        {custom.items.length} / {custom.limits.count}개 · {formatBytes(custom.totalBytes)} / {formatBytes(custom.limits.total)}
+        <span className="faint"> · 파일당 최대 {formatBytes(custom.limits.file)}</span>
+      </div>
+      {custom.error && <div className="sm-error">{custom.error}</div>}
+
+      {custom.items.length === 0 ? (
+        <div className="sm-empty">아직 추가한 알림음이 없습니다.</div>
+      ) : (
+        <ul className="sm-list">
+          {custom.items.map((c) => (
+            <li key={c.id}>
+              <span className="sm-name">{c.name}</span>
+              <span className="sm-size faint">{formatBytes(c.size)}</span>
+              <button className="sm-mini" onClick={() => preview(c.id)} title="미리듣기">▶</button>
+              <button className="sm-mini del" onClick={() => custom.remove(c.id)} title="삭제">✕</button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <style jsx>{`
+        .sm { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+        .sm-head { display: flex; align-items: center; gap: 16px; }
+        .sm-head > div { flex: 1; }
+        .sm-head h3 { font-size: 15px; font-weight: 650; margin-bottom: 4px; }
+        .sm-head p { font-size: 13px; }
+        .sm-usage { font-size: 12px; color: var(--text-muted); }
+        .sm-error { background: var(--accent-soft); border: 1px solid rgba(201,100,66,0.3); color: #f0b9a6; padding: 9px 12px; border-radius: var(--radius-sm); font-size: 13px; }
+        .sm-empty { color: var(--text-faint); font-size: 13px; padding: 12px; border: 1px dashed var(--border); border-radius: var(--radius-sm); }
+        .sm-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+        .sm-list li { display: flex; align-items: center; gap: 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; }
+        .sm-name { flex: 1; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .sm-size { font-size: 12px; }
+        .sm-mini { width: 30px; height: 28px; border: 1px solid var(--border); background: var(--surface-3); color: var(--text); border-radius: 7px; font-size: 11px; }
+        .sm-mini.del:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+      `}</style>
+    </div>
   );
 }
 
