@@ -18,7 +18,8 @@ export default function Home() {
       <section className="features">
         {[
           { t: '최적화', d: '기존 방식보다 더욱 가벼워 졌습니다.' },
-          { t: '사운드 커스텀', d: '원하는 음성을 추가할 수 있습니다.' }
+          { t: '사운드 커스텀', d: '원하는 음성을 추가할 수 있습니다.' },
+          { t: '영역지정', d: '감지할 영역을 따로 지정할 수 있습니다.' }
         ].map((f) => (
           <div key={f.t} className="card">
             <h3>{f.t}</h3>

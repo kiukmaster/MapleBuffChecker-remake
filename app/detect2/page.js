@@ -5,14 +5,24 @@ import { SKILLS, CATEGORIES, RESOLUTIONS, DURATIONS } from '@/lib/detection/cata
 import { useDetector } from '@/lib/detection/useDetector';
 import { useCustomSounds } from '@/lib/sound/useCustomSounds';
 import { CUSTOM_PREFIX, ACCEPT_ATTR, formatBytes, customSounds } from '@/lib/sound/customSounds';
+import HelpModal, { useHelp } from '@/app/components/HelpModal';
+import { useSpecialPip } from '@/app/components/SpecialPip';
 
 const CAT_COLOR = { hunting: '#5aa9e0', boss: '#b07fd9', job: '#e0b15a' };
 
 export default function Detect2Page() {
   const d = useDetector({ regionMode: true });
   const custom = useCustomSounds();
+  const help = useHelp();
+  const pip = useSpecialPip(d.countdown.special);
   const [category, setCategory] = useState('all');
   const [showSounds, setShowSounds] = useState(false);
+
+  const onResetSettings = () => {
+    if (typeof window !== 'undefined' && !window.confirm('모든 설정과 추가한 알림음을 초기화할까요?')) return;
+    d.actions.resetSettings();
+    custom.clearAll();
+  };
 
   // ── Region (ROI) selection: a rectangle drawn over the live preview ──
   const monitorRef = useRef(null);
@@ -73,7 +83,12 @@ export default function Detect2Page() {
             {RESOLUTIONS.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
           </select>
         </div>
+        <div className="reset-group">
+          <button className="btn ghost sm" disabled={locked} onClick={onResetSettings}>설정 초기화</button>
+          <button className="btn ghost sm" onClick={help.resetAndShow} title="이 버튼을 누르면 도움말 팝업이 다시 표시됩니다!">팝업 초기화</button>
+        </div>
         <div className="spacer" />
+        <button className="btn ghost" onClick={help.show}>도움말 보기</button>
         <button className={'btn ghost' + (showSounds ? ' on' : '')} onClick={() => setShowSounds((v) => !v)}>
           내 알림음{custom.items.length > 0 ? ` (${custom.items.length})` : ''}
         </button>
@@ -144,6 +159,14 @@ export default function Detect2Page() {
                     <select value={d.specialLead} disabled={locked} onChange={(e) => d.actions.setSpecialLead(Number(e.target.value))}>
                       {s.alert.leadOptions.map((n) => <option key={n} value={n}>{n}초 전</option>)}
                     </select>
+                  </Row>
+                )}
+
+                {s.alert.mode === 'timer' && pip.supported && (
+                  <Row label="PiP 카운트다운">
+                    <button className="btn ghost full" onClick={pip.open} disabled={pip.active}>
+                      {pip.active ? 'PiP 표시 중' : 'PiP 창 열기'}
+                    </button>
                   </Row>
                 )}
 
@@ -237,6 +260,9 @@ export default function Detect2Page() {
         </section>
       </div>
 
+      <HelpModal open={help.open} onAck={help.ack} onDismiss={help.dismissForever} />
+      {pip.node}
+
       <style jsx>{`
         .detect { display: flex; flex-direction: column; gap: 22px; }
         .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
@@ -255,11 +281,12 @@ export default function Detect2Page() {
         .status.on .ring { position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid var(--accent); animation: mbcRing 1.8s ease-out infinite; }
 
         .toolbar {
-          display: flex; align-items: flex-end; gap: 16px;
+          display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap;
           background: var(--surface); border: 1px solid var(--border);
           border-radius: var(--radius); padding: 16px 18px;
         }
-        .toolbar .spacer { flex: 1; }
+        .toolbar .spacer { flex: 1; min-width: 0; }
+        .reset-group { display: flex; gap: 6px; }
         .field { display: flex; flex-direction: column; gap: 6px; }
         .field label { font-size: 12px; color: var(--text-faint); }
 
@@ -366,6 +393,8 @@ export default function Detect2Page() {
         .detect .btn.ghost { background: transparent; color: var(--text-muted); border-color: var(--border-strong); }
         .detect .btn.ghost:hover { color: var(--text); background: var(--surface-2); }
         .detect .btn.ghost.on { color: var(--text); background: var(--surface-2); border-color: var(--accent); }
+        .detect .btn.sm { padding: 8px 12px; font-size: 12.5px; border-radius: 9px; }
+        .detect .btn.full { width: 100%; }
       `}</style>
     </main>
   );
