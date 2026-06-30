@@ -8,6 +8,7 @@ import { fetchPatchNotes, hasFreshNote } from '@/lib/patchnotes';
 const LINKS = [
   { href: '/', label: '홈' },
   { href: '/detect', label: '스킬 감지' },
+  { href: '/detect2', label: '영역 감지' },
   { href: '/update', label: '패치노트' },
 ];
 
