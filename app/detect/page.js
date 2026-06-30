@@ -58,7 +58,7 @@ export default function DetectPage() {
         <div className="spacer" />
         <button className="btn ghost" onClick={help.show}>도움말 보기</button>
         <button className={'btn ghost' + (showSounds ? ' on' : '')} onClick={() => setShowSounds((v) => !v)}>
-          내 알림음{custom.items.length > 0 ? ` (${custom.items.length})` : ''}
+          내 알림음 추가하기{custom.items.length > 0 ? ` (${custom.items.length})` : ''}
         </button>
         {!d.isActive ? (
           <button className="btn primary" disabled={!anyEnabled} onClick={d.actions.start}>
